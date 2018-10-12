@@ -24,10 +24,90 @@ def read_data(file_name = 'data.txt'):
         return x_arr, y_arr
 
 
+def plot_residual_bp(residuals):
+    fig, ax = plt.subplots()
+    bp_dict = ax.boxplot(residuals)
+
+    # print(bp_dict.keys())
+
+    for line in bp_dict['medians']:
+        x, y = line.get_xydata()[0]
+        plt.text(x - 0.05, y, '%.1f' % y, verticalalignment='center', horizontalalignment='center')
+
+    for line in bp_dict['boxes']:
+        x, y = line.get_xydata()[0]
+        plt.text(x - 0.05, y, '%.1f' % y, verticalalignment='center', horizontalalignment='center')
+        x, y = line.get_xydata()[3]
+        plt.text(x - 0.05, y, '%.1f' % y, verticalalignment='center', horizontalalignment='center')
+
+    for line in bp_dict['caps']:
+        x, y = line.get_xydata()[0]
+        plt.text(x - 0.05, y, '%.1f' % y, verticalalignment='center', horizontalalignment='center')
+
+    plt.ylabel('Residual')
+    plt.show()
+
+
+def prob_6_6(x_arr, y_arr, b):
+    mse = math_utils.calc_mse(x_arr, y_arr, b)
+    msr = math_utils.calc_msr(x_arr, y_arr, b)
+
+    f_star = msr / mse
+    print('F*: ', f_star)
+
+    estimated_var = math_utils.calc_estimated_bvar_mat(x_arr, y_arr, b)
+    # print('s: \n', np.sqrt(estimated_var))
+
+
+def prob_6_7(x_arr, y_arr, b):
+    x1_arr = x_arr[:, :2]
+    b_1 = math_utils.mul_ls_estimator(x1_arr, y_arr)
+    print('b1: ', b_1)
+    R_1 = math_utils.calc_R_sqr(x1_arr, y_arr, b_1)
+
+    x2_arr = np.delete(x_arr, 1, 1)
+    b_2 = math_utils.mul_ls_estimator(x2_arr, y_arr)
+    print('b2: ', b_2)
+    R_2 = math_utils.calc_R_sqr(x2_arr, y_arr, b_2)
+
+    print(R_1 + R_2)
+
+
+def prob_6_8(x_arr, y_arr, b):
+    xh = np.array([1, 5, 4], np.newaxis)
+    yh = xh @ b
+    print('yh: ', yh)
+
+    s2_y = math_utils.calc_estimated_yvar(x_arr, y_arr, b, xh)
+
+    s_y = np.sqrt(s2_y)
+    print('s_y: ', s_y)
+
+
+def prob_6_5(x_arr, y_arr, b):
+
+    n_data = y_arr.size
+    n_var = 3
+
+    data = np.ndarray((n_var, n_data), dtype=float)
+
+    data[0] = y_arr.flatten()
+    data[1] = x_arr[:, 1]
+    data[2] = x_arr[:, 2]
+
+    fig = math_utils.scatterplot_matrix(data, ['brand liking', 'moisture content', 'sweetness'],
+                                        linestyle='none', marker='o', color='black', mfc='none')
+
+    fig.suptitle('Scatter plot matrix')
+    plt.show()
+
+    # print(data)
+
+
 if __name__ == '__main__':
     x_arr, y_arr = read_data()
     b = math_utils.mul_ls_estimator(x_arr, y_arr)
-    residuals = (math_utils.calc_residuals(x_arr, y_arr, b))
-    fig, ax = plt.subplots()
-    ax.boxplot(residuals)
-    plt.show()
+
+    # prob_6_6(x_arr, y_arr, b)
+    # prob_6_8(x_arr, y_arr, b)
+    prob_6_5(x_arr, y_arr, b)
