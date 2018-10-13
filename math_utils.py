@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+import scipy.stats as st
 
 
 def mul_ls_estimator(x, y):
@@ -148,3 +149,52 @@ def scatterplot_matrix(data, names, **kwargs):
         axes[i,j].yaxis.set_visible(True)
 
     return fig
+
+
+def pearson_correlation_coefficient(x, y):
+    num = ((x - x.mean()) * (y - y.mean())).sum()
+    den = np.sqrt(np.square(x - x.mean()).sum() * np.square(y - y.mean()).sum())
+    r = num / den
+    print('num: {}, den: {}, r: {}'.format(num, den, r))
+    return r
+
+
+def normal_probability_plot(x, y, b):
+
+    n = y.size
+
+    residuals = calc_residuals(x, y, b)
+
+    order = residuals.argsort(axis=0)
+    rank = order.argsort(axis=0) + 1
+
+    ev_param = (rank - 0.375) / (n + 0.25)
+    mse_sqrt = np.sqrt(calc_mse(x, y, b))
+    ev = mse_sqrt * st.norm.ppf(ev_param)
+    print(ev)
+
+    plt.plot(ev, residuals, linestyle='none', marker='o', color='black', mfc='none')
+    plt.xlabel('Expected')
+    plt.ylabel('Residual')
+    plt.show()
+
+
+def breush_pagan_test(x, y, b):
+
+    # regress the squared residuals
+    e_sqr = np.square(calc_residuals(x, y, b))
+
+    gamma = mul_ls_estimator(x, e_sqr)
+    ssr_star = calc_ssr(x, e_sqr, gamma)
+    print('ssr star: ', ssr_star)
+
+    sse = calc_sse(x, y, b)
+
+    n = y.size
+
+    test_stat = (ssr_star / 2) / np.square(sse / n)
+
+    print(st.chi2.ppf(0.99, 1))
+
+    print(gamma)
+    print('test stat: ', test_stat)

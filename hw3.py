@@ -48,6 +48,36 @@ def plot_residual_bp(residuals):
     plt.show()
 
 
+def plot_residuals(x, y, b):
+    residuals = math_utils.calc_residuals(x, y, b)
+    y_hat = x @ b
+
+    fig, axes = plt.subplots(2, 2)
+    fig.subplots_adjust(hspace=0.05, wspace=0.05)
+
+    axes[0, 0].plot(y_hat, residuals, linestyle='none', marker='o', color='black', mfc='none')
+    axes[0, 0].set_xlabel('Fitted')
+    axes[0, 0].set_ylabel('Residual')
+    axes[0, 0].set_title(r'Residual Plot against $\hat Y$')
+
+    axes[0, 1].plot(x[:, 1], residuals, linestyle='none', marker='o', color='black', mfc='none')
+    axes[0, 1].set_xlabel('Moisture Content')
+    axes[0, 1].set_ylabel('Residual')
+    axes[0, 1].set_title(r'Residual Plot against $X_1$')
+
+    axes[1, 0].plot(x[:, 2], residuals, linestyle='none', marker='o', color='black', mfc='none')
+    axes[1, 0].set_xlabel('Sweetness')
+    axes[1, 0].set_ylabel('Residual')
+    axes[1, 0].set_title(r'Residual Plot against $X_2$')
+
+    axes[1, 1].plot(x[:, 1] * x[:, 2], residuals, linestyle='none', marker='o', color='black', mfc='none')
+    axes[1, 1].set_xlabel(r'$X_1X_2$')
+    axes[1, 1].set_ylabel('Residual')
+    axes[1, 1].set_title(r'Residual Plot against $X_1X_2$')
+
+    plt.show()
+
+
 def prob_6_6(x_arr, y_arr, b):
     mse = math_utils.calc_mse(x_arr, y_arr, b)
     msr = math_utils.calc_msr(x_arr, y_arr, b)
@@ -95,13 +125,19 @@ def prob_6_5(x_arr, y_arr, b):
     data[1] = x_arr[:, 1]
     data[2] = x_arr[:, 2]
 
-    fig = math_utils.scatterplot_matrix(data, ['brand liking', 'moisture content', 'sweetness'],
-                                        linestyle='none', marker='o', color='black', mfc='none')
+    # fig = math_utils.scatterplot_matrix(data, ['brand liking', 'moisture content', 'sweetness'],
+    #                                     linestyle='none', marker='o', color='black', mfc='none')
+    #
+    # fig.suptitle('Scatter plot matrix')
+    # plt.show()
 
-    fig.suptitle('Scatter plot matrix')
-    plt.show()
+    # math_utils.pearson_correlation_coefficient(x_arr[:, 1], x_arr[:, 2])
 
-    # print(data)
+    # plot_residuals(x_arr, y_arr, b)
+
+    # math_utils.normal_probability_plot(x_arr, y_arr, b)
+
+    math_utils.breush_pagan_test(x_arr, y_arr, b)
 
 
 if __name__ == '__main__':
