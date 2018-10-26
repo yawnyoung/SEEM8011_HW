@@ -3,7 +3,7 @@ import math_utils
 import matplotlib.pyplot as plt
 
 
-def read_data(file_name = 'data.txt'):
+def read_data(file_name = 'data_6_5.txt'):
 
     with open(file_name) as f:
         y_list = []
