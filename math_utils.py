@@ -198,3 +198,73 @@ def breush_pagan_test(x, y, b):
 
     print(gamma)
     print('test stat: ', test_stat)
+
+
+def calc_rap(x, y):
+    b = mul_ls_estimator(x, y)
+
+    n = y.size
+    p = x.shape[1]
+
+    sse = calc_sse(x, y, b)
+    ssto = calc_ssto(y)
+
+    rap = 1 - ((n - 1) / (n - p)) * (sse / ssto)
+
+    return rap
+
+
+def calc_cp(x, y, mse_full):
+    b = mul_ls_estimator(x, y)
+
+    n = y.size
+    p = x.shape[1]
+
+    sse = calc_sse(x, y, b)
+
+    cp = sse / mse_full - (n - 2 * p)
+
+    return cp
+
+
+def calc_press(x, y):
+
+    n = y.size
+
+    press = 0
+
+    for i in range(n):
+        x_r = np.delete(x, i, 0)
+        y_r = np.delete(y, i, 0)
+        b_r = mul_ls_estimator(x_r, y_r)
+        y_r_hat = x[i, :] @ b_r
+        press += (y[i] - y_r_hat) * (y[i] - y_r_hat)
+
+    return press
+
+
+def calc_press_none(y):
+    n = y.size
+
+    press = 0
+
+    for i in range(n):
+        y_r = np.delete(y, i, 0)
+        y_r_hat = y_r.mean()
+        press += (y[i] - y_r_hat) * (y[i] - y_r_hat)
+
+    return press
+
+
+def plot_residuals(x, y):
+    b = mul_ls_estimator(x, y)
+
+    y_hat = x @ b
+
+    e = calc_residuals(x, y, b)
+
+    plt.plot(y_hat, e, linestyle='none', marker='o', color='black', mfc='none')
+    plt.xlabel('Predicted value')
+    plt.ylabel('Residual')
+    plt.title('Residual plot')
+    plt.show()
